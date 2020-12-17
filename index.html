@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Coding Train: Data and APIs Project 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </head>
+  <body>
+    <h1>Sculpture types</h1>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <script>
+      // Data from: https://data.giss.nasa.gov/gistemp/
+      // Mean from: https://earthobservatory.nasa.gov/world-of-change/DecadalTemp
+
+      window.addEventListener('load', setup);
+
+      async function setup() {
+        const ctx = document.getElementById('myChart').getContext('2d');
+        // Change globalTemps name to make less confusing. Must change all globalTemps after.
+        const globalTemps = await getData();
+        const myChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            // labels: globalTemps.material,
+
+            // AC Note:
+            // Accessing materialList with dot method
+            labels: globalTemps.materialList,
+            datasets: [
+              {
+                label: 'Sculptures',
+
+                // AC Note:
+                // Accessing materialQuantity with dot method
+                data: globalTemps.materialQuantity,
+                fill: false,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {}
+        });
+      }
+
+      async function getData() {
+        // const response = await fetch('testdata.csv');
+        // const response = await fetch('ZonAnn.Ts+dSST.csv');
+        const response = await fetch('sculpturesV3-mat_dummyColumn.csv');
+        const data = await response.text();
+        const material = [];
+        const sequentialNumber = [];
+
+        // AC Note:
+        // Created an array of the materials. There is another way with a for loop.
+        const materialList = ['Bust', 'Abstract', 'Relief', 'Fountain', 'Figurative']
+        console.log(material)
+        console.log(materialList)
+
+        // AC Note:
+        // Create a counter for each material with a const
+        let steel = 0;
+        let bronze = 0;
+        let ceramic = 0;
+        let granite = 0;
+        let stone = 0;
+        let marble = 0;
+        let bronzeAndGranite = 0;
+        let chrome = 0;
+
+        const rows = data.split('\n').slice(1);
+        rows.forEach(row => {
+          const cols = row.split(',');
+          material.push(cols[0]);
+          // temps.push(14 + parseFloat(cols[1]));
+
+          // AC Note:
+          // sequentialNumber is a random list of numbers that I placed. You don't actually need this number.
+          sequentialNumber.push(cols[1]);
+        });
+
+        // AC Note:
+        // For loop to count how many sculpture pieces are of a particular material
+        for (i = 0; i < material.length; i++) {
+          if (material[i] === 'STEEL') {
+            steel = steel + 1;
+          } else if (material[i] === 'BRONZE') {
+            bronze = bronze + 1;
+          } else if (material[i] === 'CERAMIC') {
+            ceramic = ceramic + 1;
+          } else if (material[i] === 'GRANITE') {
+            granite = granite + 1;
+          } else if (material[i] === 'STONE') {
+            stone = stone + 1;
+          } else if (material[i] === 'MARBLE') {
+            marble = marble + 1;
+          } else if (material[i] === 'BRONZE AND GRANITE') {
+            bronzeAndGranite = bronzeAndGranite + 1;
+          } else if (material[i] === 'CHROME') {
+            chrome = chrome + 1;
+          }
+        }
+
+        // AC Note:
+        // Store the number of materials into an array
+        let materialQuantity = [steel, bronze, ceramic, granite, stone, marble, bronzeAndGranite, chrome];
+        // console.log(materialQuantity);
+
+        // AC Note:
+        // You have to return the new arrays here (which will be called with a dot method)
+        return { materialList, materialQuantity };
+      }
+    </script>
+  </body>
+</html>
